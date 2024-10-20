@@ -1,0 +1,178 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="using:BTTCGuildApp.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BTTCGuildApp.Views.HomePageView"
+			 x:DataType="vm:HomePageViewModel">
+	<Panel>
+		<StackPanel 
+			Orientation="Vertical" 
+			Margin="20,15"
+			Spacing="10">
+			<TextBlock
+				Text="Home"
+				FontSize="30"
+				FontWeight="Bold"
+				DockPanel.Dock="Top"
+				Foreground=""
+				Margin="12 0 0 0"/>
+			<Border
+				CornerRadius="8"
+				ClipToBounds="True">
+					<StackPanel
+						Orientation="Vertical"
+						Spacing="5"
+						Background="rgba(22, 20, 19, 0.7)">
+						<TextBlock
+							Text="Guild Search"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="#DBB74D"
+							Padding="18 10 0 0"/>
+						<Grid
+							Name="GuildSearchGrid"
+							DockPanel.Dock="Bottom"
+							ShowGridLines="True"
+							ColumnDefinitions="Auto,Auto,Auto"
+							RowDefinitions="Auto,Auto"
+							Margin="10 0 10 10">
+							<Grid.Styles>
+								<Style Selector="ComboBox">
+									<Setter Property="Width" Value="175"/>
+									<Setter Property="Margin" Value="7"/>
+								</Style>
+							</Grid.Styles>
+							<TextBox
+								Grid.Row="0"
+								Grid.Column="0"
+								Watermark="Member Name"
+								Width="175"
+								Margin="8"/>
+							<Button
+								Grid.Row="1"
+								Grid.Column="1"
+								Width="175"
+								Height="30"
+								Margin="7"
+								Content="Branch"
+								ToolTip.Tip="{Binding BranchSelectedListTooltip}"
+								Command="{Binding ToggleBranchListCommand}"/>
+							<Button
+								Grid.Row="0"
+								Grid.Column="1"
+								Width="175"
+								Height="30"
+								Margin="7"
+								Content="Archetype"
+                                ToolTip.Tip="{Binding ArchetypeSelectedListTooltip}"
+								Command="{Binding ToggleArchetypeListCommand}"/>
+							<Button
+								Grid.Row="0"
+								Grid.Column="2"
+								Width="175"
+								Height="30"
+								Margin="7"
+								Content="Artisan"
+								ToolTip.Tip="{Binding ArtisanSelectedListTooltip}"
+								Command="{Binding ToggleArtisanListCommand}"/>
+							<Button
+								Grid.Row="1"
+								Grid.Column="0"
+								Width="175"
+								Height="30"
+								Margin="7"
+								Content="Timezone"
+								ToolTip.Tip="{Binding TimezoneSelectedListTooltip}"
+								Command="{Binding ToggleTimezoneListCommand}"/>
+							<Button
+								Grid.Row="1"
+								Grid.Column="2"
+								Width="175"
+								Height="30"
+								Margin="7"
+								Content="RP Priority"
+								ToolTip.Tip="{Binding RolePlayPrioritySelectedListTooltip}"
+								Command="{Binding ToggleRolePlayPriorityListCommand}"/>
+						</Grid>
+					</StackPanel>
+			</Border>
+		</StackPanel>
+
+		<Panel
+			Name="ArchetypePopup"
+			ZIndex="1" 
+			IsVisible="{Binding IsArchetypeListOpen}"
+			PointerPressed="UnShowListBoxPopup">
+			<Rectangle Fill="Black" Opacity="0.55"/>
+			<ListBox
+				Height="305"
+				Width="200"
+				SelectionMode="Multiple,Toggle"
+				SelectedItems="{Binding ArchetypeSelectedList}"
+				CornerRadius="8"
+				ItemsSource="{Binding ArchetypeList}"/>
+		</Panel>
+
+		<Panel
+			Name="ArtisanPopup"
+			ZIndex="1"
+			IsVisible="{Binding IsArtisanListOpen}"
+			PointerPressed="UnShowListBoxPopup">
+			<Rectangle Fill="Black" Opacity="0.55"/>
+			<ListBox
+				Height="500"
+				Width="200"
+				SelectionMode="Multiple,Toggle"
+				SelectedItems="{Binding ArtisanSelectedList}"
+				CornerRadius="8"
+				ItemsSource="{Binding ArtisanList}"/>
+		</Panel>
+
+		<Panel
+			Name="BranchPopup"
+			ZIndex="1"
+			IsVisible="{Binding IsBranchListOpen}"
+			PointerPressed="UnShowListBoxPopup">
+			<Rectangle Fill="Black" Opacity="0.55"/>
+			<ListBox
+				Height="115"
+				Width="200"
+				SelectionMode="Multiple,Toggle"
+				SelectedItems="{Binding BranchSelectedList}"
+				CornerRadius="8"
+				ItemsSource="{Binding BranchList}"/>
+		</Panel>
+
+		<Panel
+			Name="TimezonePopup"
+			ZIndex="1"
+			IsVisible="{Binding IsTimezoneListOpen}"
+			PointerPressed="UnShowListBoxPopup">
+			<Rectangle Fill="Black" Opacity="0.55"/>
+			<ListBox
+				Height="305"
+				Width="200"
+				SelectionMode="Multiple,Toggle"
+				SelectedItems="{Binding TimezoneSelectedList}"
+				CornerRadius="8"
+				ItemsSource="{Binding TimezoneList}"/>
+		</Panel>
+
+		<Panel
+			Name="RolePlayPriorityPopup"
+			ZIndex="1"
+			IsVisible="{Binding IsRolePlayPriorityListOpen}"
+			PointerPressed="UnShowListBoxPopup">
+			<Rectangle Fill="Black" Opacity="0.55"/>
+			<ListBox
+				Height="152"
+				Width="200"
+				SelectionMode="Multiple,Toggle"
+				SelectedItems="{Binding RolePlayPrioritySelectedList}"
+				CornerRadius="8"
+				ItemsSource="{Binding RolePlayPriorityList}"/>
+		</Panel>
+	</Panel>
+</UserControl>
