@@ -2,7 +2,7 @@ using BTTCGuildApp.Helpers;
 
 namespace BTTCGuildApp.Models
 {
-    public enum Timezones
+    public enum Timezone
     {
         [StringValue("Atlantic (AST)")] AST,
         [StringValue("Australia (AUS)")] AUS,

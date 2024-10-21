@@ -29,13 +29,13 @@
     <!--  PointerOver State  -->
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
-        <Setter Property="Foreground" Value="#DBB74D" />
+        <Setter Property="Foreground" Value="rgba(219, 183, 77, 1)" />
     </Style>
 
     <!--  Pressed State  -->
     <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}" />
-        <Setter Property="Foreground" Value="#DBB74D" />
+        <Setter Property="Foreground" Value="rgba(219, 183, 77, 1)" />
     </Style>
 
     <!--  Selected State  -->
@@ -43,25 +43,25 @@
 
         <Style Selector="^">
             <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
-            <Setter Property="Foreground" Value="#DBB74D" />
+            <Setter Property="Foreground" Value="rgba(219, 183, 77, 1)" />
         </Style>
 
         <!--  Selected Unfocused State  -->
         <Style Selector="^:not(:focus) /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
-            <Setter Property="Foreground" Value="#DBB74D" />
+            <Setter Property="Foreground" Value="rgba(219, 183, 77, 1)" />
         </Style>
 
         <!--  Selected PointerOver State  -->
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
-            <Setter Property="Foreground" Value="#DBB74D" />
+            <Setter Property="Foreground" Value="rgba(219, 183, 77, 1)" />
         </Style>
 
         <!--  Selected Pressed State  -->
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
-            <Setter Property="Foreground" Value="#DBB74D" />
+            <Setter Property="Foreground" Value="rgba(219, 183, 77, 1)" />
         </Style>
     </Style>
     </ControlTheme>

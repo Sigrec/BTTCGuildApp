@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Avalonia.Controls;
+using BTTCGuildApp.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -7,26 +9,34 @@ namespace BTTCGuildApp.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
+        private static HomePageView HomePage = new HomePageView() { DataContext = new HomePageViewModel() };
+        private static AboutPageView AboutPage = new AboutPageView() { DataContext = new AboutPageViewModel() };
+        private static SettingsPageView SettingsPage = new SettingsPageView() { DataContext = new SettingsPageViewModel() };
         [ObservableProperty] private bool _isMenuOpen = false;
-        [ObservableProperty] private ViewModelBase _currentPage = new HomePageViewModel();
+        [ObservableProperty] private UserControl? _currentPage = HomePage;
+        private static string currentPageLabel = "Home";
         [RelayCommand] private void OpenMenu() => IsMenuOpen ^= true;
         public ObservableCollection<MenuItem> MenuItems { get; } =
         [
-            new MenuItem(typeof(HomePageViewModel), "fa-solid fa-house"),
-            new MenuItem(typeof(SettingsPageViewModel), "fa-solid fa-gear"),
-            new MenuItem(typeof(AboutPageViewModel), "fa-solid fa-circle-info"),
+            new MenuItem(typeof(HomePageView), "fa-solid fa-house"),
+            new MenuItem(typeof(SettingsPageView), "fa-solid fa-gear"),
+            new MenuItem(typeof(AboutPageView), "fa-solid fa-circle-info"),
         ];
         [ObservableProperty] private MenuItem? _selectedMenuItem;
 
         partial void OnSelectedMenuItemChanged(MenuItem? value)
         {
-            if (value is not null)
+            if (value is not null && !value.Label.Equals(currentPageLabel))
             {
-                var instance = Activator.CreateInstance(value.Model);
-                if (instance is not null)
+                LOGGER.Debug($"Menu Changed to \"{value.Label} Page\"");
+                currentPageLabel = value.Label;
+                CurrentPage = value.Label switch
                 {
-                    CurrentPage = (ViewModelBase)instance;
-                }
+                    "Home" => HomePage,
+                    "About" => AboutPage,
+                    "Settings" => SettingsPage,
+                    _ => throw new ArgumentNullException()
+                };
             }
         }
     }
@@ -46,7 +56,7 @@ namespace BTTCGuildApp.ViewModels
         public MenuItem(Type model, string icon, string label = "")
         {
             this.Model = model;
-            this.Label = string.IsNullOrWhiteSpace(label) ? model.Name.Replace("PageViewModel", string.Empty) : label;
+            this.Label = string.IsNullOrWhiteSpace(label) ? model.Name.Replace("PageView", string.Empty) : label;
             this.Icon = icon;
     }
     }

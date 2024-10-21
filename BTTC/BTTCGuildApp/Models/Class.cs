@@ -2,7 +2,7 @@ using BTTCGuildApp.Helpers;
 
 namespace BTTCGuildApp.Models
 {
-    public enum Classes
+    public enum Class
     {
         [StringValue("Acolyte")] Acolyte,
         [StringValue("Apostle")] Apostle,

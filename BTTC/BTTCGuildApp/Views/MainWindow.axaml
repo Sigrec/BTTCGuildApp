@@ -30,8 +30,8 @@
         OpenPaneLength="250"
         CompactPaneLength="50"
         DisplayMode="CompactInline"
-        Background="#161413"
-        PaneBackground="#161413">
+        Background="rgba(22, 20, 19, 1)"
+        PaneBackground="rgba(22, 20, 19, 1)">
         <SplitView.Pane>
 			<StackPanel 
                 Spacing="5"
@@ -45,8 +45,8 @@
                     Height="32"
                     Margin="9 11 0 7"
 					FontSize="20"
-					Foreground="#DBB74D"
-					Background="#2D2D2D"
+					Foreground="rgba(219, 183, 77, 1)"
+					Background="rgba(45, 45, 45, 1)"
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
                     HorizontalAlignment="Left"/>
@@ -89,7 +89,7 @@
         <SplitView.Content>
             <Border
                 CornerRadius="12,0,0,0"
-                Background="#2D2D2D">
+                Background="rgba(45, 45, 45, 1)">
                 <TransitioningContentControl Content="{Binding CurrentPage}"/>
             </Border>
         </SplitView.Content>

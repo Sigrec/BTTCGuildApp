@@ -3,13 +3,14 @@
 			 xmlns:vm="using:BTTCGuildApp.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="BTTCGuildApp.Views.HomePageView"
 			 x:DataType="vm:HomePageViewModel">
 	<Panel>
 		<StackPanel 
 			Orientation="Vertical" 
-			Margin="20,15"
+			Margin="20 15 20 0"
 			Spacing="10">
 			<TextBlock
 				Text="Home"
@@ -18,84 +19,230 @@
 				DockPanel.Dock="Top"
 				Foreground=""
 				Margin="12 0 0 0"/>
+            <!-- TODO Border bottom corner radius not working + margin bottom not working -->
 			<Border
-				CornerRadius="8"
-				ClipToBounds="True">
+				CornerRadius="8 8 8 8"
+				ClipToBounds="True"
+                Margin="10 0 10 0"
+                Width="850"
+                HorizontalAlignment="Left">
 					<StackPanel
 						Orientation="Vertical"
-						Spacing="5"
+						Spacing="8"
+                        Margin="0 0 0 18"
 						Background="rgba(22, 20, 19, 0.7)">
-						<TextBlock
-							Text="Guild Search"
-							FontSize="20"
-							FontWeight="SemiBold"
-							Foreground="#DBB74D"
-							Padding="18 10 0 0"/>
+                        <StackPanel
+                            Margin="18 10 0 0"
+                            Orientation="Horizontal"
+							Spacing="10">
+                            <TextBlock
+                                Text="Guild Search"
+                                FontSize="20"
+                                FontWeight="SemiBold"
+                                VerticalAlignment="Center"
+                                Foreground="rgba(219, 183, 77, 1)"/>
+                            <Button
+                                Click="StartGuildSheetSearchAsync"
+                                i:Attached.Icon="fa-solid fa-magnifying-glass"
+                                FontSize="20"
+                                Foreground="rgba(219, 183, 77, 1)"
+                                Background="rgba(45, 45, 45, 1)"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <TextBox
+                            Name="MemberNameTextBox"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Watermark="Character/Discord Name"
+                            Width="375"
+                            Height="33"
+                            HorizontalAlignment="Left"
+                            Margin="18 0 0 0"
+                            BorderBrush="rgba(219, 183, 77, 1)"
+                            BorderThickness="2"/>
 						<Grid
 							Name="GuildSearchGrid"
 							DockPanel.Dock="Bottom"
-							ShowGridLines="True"
+							ShowGridLines="False"
 							ColumnDefinitions="Auto,Auto,Auto"
 							RowDefinitions="Auto,Auto"
-							Margin="10 0 10 10">
+							Margin="18 0 10 0">
 							<Grid.Styles>
 								<Style Selector="ComboBox">
 									<Setter Property="Width" Value="175"/>
 									<Setter Property="Margin" Value="7"/>
 								</Style>
 							</Grid.Styles>
-							<TextBox
-								Grid.Row="0"
-								Grid.Column="0"
-								Watermark="Member Name"
-								Width="175"
-								Margin="8"/>
-							<Button
-								Grid.Row="1"
-								Grid.Column="1"
-								Width="175"
-								Height="30"
-								Margin="7"
-								Content="Branch"
-								ToolTip.Tip="{Binding BranchSelectedListTooltip}"
-								Command="{Binding ToggleBranchListCommand}"/>
-							<Button
-								Grid.Row="0"
-								Grid.Column="1"
-								Width="175"
-								Height="30"
-								Margin="7"
-								Content="Archetype"
-                                ToolTip.Tip="{Binding ArchetypeSelectedListTooltip}"
-								Command="{Binding ToggleArchetypeListCommand}"/>
-							<Button
-								Grid.Row="0"
-								Grid.Column="2"
-								Width="175"
-								Height="30"
-								Margin="7"
-								Content="Artisan"
-								ToolTip.Tip="{Binding ArtisanSelectedListTooltip}"
-								Command="{Binding ToggleArtisanListCommand}"/>
-							<Button
-								Grid.Row="1"
-								Grid.Column="0"
-								Width="175"
-								Height="30"
-								Margin="7"
-								Content="Timezone"
-								ToolTip.Tip="{Binding TimezoneSelectedListTooltip}"
-								Command="{Binding ToggleTimezoneListCommand}"/>
-							<Button
-								Grid.Row="1"
-								Grid.Column="2"
-								Width="175"
-								Height="30"
-								Margin="7"
-								Content="RP Priority"
-								ToolTip.Tip="{Binding RolePlayPrioritySelectedListTooltip}"
-								Command="{Binding ToggleRolePlayPriorityListCommand}"/>
+							<StackPanel
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Orientation="Horizontal"
+                                Spacing="1">
+                                <Button
+                                    Command="{Binding ClearRaceSelectedListCommand}"
+                                    i:Attached.Icon="fa-solid fa-arrows-rotate"
+                                    FontSize="20"
+                                    Foreground="rgba(219, 183, 77, 1)"
+                                    Background="rgba(45, 45, 45, 1)"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Left"/>
+                                <Button
+                                    Width="175"
+                                    Height="33"
+                                    Margin="7"
+                                    Content="Race"
+                                    FontSize="16"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding RaceSelectedListTooltip}"
+                                    Command="{Binding ToggleRaceListCommand}"/>
+                            </StackPanel>
+							<StackPanel
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="1">
+                                <Button
+                                    Command="{Binding ClearBranchSelectedListCommand}"
+                                    i:Attached.Icon="fa-solid fa-arrows-rotate"
+                                    FontSize="20"
+                                    Foreground="rgba(219, 183, 77, 1)"
+                                    Background="rgba(45, 45, 45, 1)"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Left"/>
+                                <Button
+                                    Width="175"
+                                    Height="33"
+                                    Margin="7"
+                                    Content="Branch"
+                                    FontSize="16"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding BranchSelectedListTooltip}"
+                                    Command="{Binding ToggleBranchListCommand}"/>
+                            </StackPanel>
+							<StackPanel
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="1">
+                                <Button
+                                    Command="{Binding ClearArchetypeSelectedListCommand}"
+                                    i:Attached.Icon="fa-solid fa-arrows-rotate"
+                                    FontSize="20"
+                                    Foreground="rgba(219, 183, 77, 1)"
+                                    Background="rgba(45, 45, 45, 1)"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Left"/>
+                                <Button
+                                    Width="175"
+                                    Height="33"
+                                    Margin="7"
+                                    Content="Archetype"
+                                    FontSize="16"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding ArchetypeSelectedListTooltip}"
+                                    Command="{Binding ToggleArchetypeListCommand}"/>
+                            </StackPanel>
+							<StackPanel
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Orientation="Horizontal"
+                                Spacing="1">
+                                <Button
+                                    Command="{Binding ClearArtisanSelectedListCommand}"
+                                    i:Attached.Icon="fa-solid fa-arrows-rotate"
+                                    FontSize="20"
+                                    Foreground="rgba(219, 183, 77, 1)"
+                                    Background="rgba(45, 45, 45, 1)"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Left"/>
+                                <Button
+                                    Width="175"
+                                    Height="33"
+                                    Margin="7"
+                                    Content="Artisan"
+                                    FontSize="16"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding ArtisanSelectedListTooltip}"
+                                    Command="{Binding ToggleArtisanListCommand}"/>
+                            </StackPanel>
+							<StackPanel
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="1">
+                                <Button
+                                    Command="{Binding ClearTimezoneSelectedListCommand}"
+                                    i:Attached.Icon="fa-solid fa-arrows-rotate"
+                                    FontSize="20"
+                                    Foreground="rgba(219, 183, 77, 1)"
+                                    Background="rgba(45, 45, 45, 1)"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Left"/>
+                                <Button
+                                    Width="175"
+                                    Height="33"
+                                    Margin="7"
+                                    Content="Timezone"
+                                    FontSize="16"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding TimezoneSelectedListTooltip}"
+                                    Command="{Binding ToggleTimezoneListCommand}"/>
+                            </StackPanel>
+							<StackPanel
+                                Grid.Row="1"
+                                Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="1">
+                                <Button
+                                    Command="{Binding ClearRolePlayPrioritySelectedListCommand}"
+                                    i:Attached.Icon="fa-solid fa-arrows-rotate"
+                                    FontSize="20"
+                                    Foreground="rgba(219, 183, 77, 1)"
+                                    Background="rgba(45, 45, 45, 1)"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Left"/>
+                                <Button
+                                    Width="175"
+                                    Height="33"
+                                    Margin="7"
+                                    Content="RolePlayPriority"
+                                    FontSize="16"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding RolePlayPrioritySelectedListTooltip}"
+                                    Command="{Binding ToggleRolePlayPriorityListCommand}"/>
+                            </StackPanel>
 						</Grid>
+                        <DataGrid 
+                            Name="GuildMemberSearchDataGrid"
+                            ItemsSource="{Binding QueriedMemberList}"
+                            MaxWidth="800"
+                            MaxHeight="345"
+                            CornerRadius="0"
+                            BorderThickness="2"
+                            ClipToBounds="False"
+                            IsReadOnly="True"
+                            IsVisible="{Binding IsDataGridVisible}"
+                            CanUserReorderColumns="True"
+                            CanUserSortColumns="False"
+                            AutoGenerateColumns="False"
+                            CanUserResizeColumns="False"
+                            AreRowGroupHeadersFrozen="False"
+                            FrozenColumnCount="0"
+                            AreRowDetailsFrozen="True"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            GridLinesVisibility="All"
+                            FontWeight="Bold"
+                            Margin="18 0 18 18"
+                            SelectionMode="Single"/>
 					</StackPanel>
 			</Border>
 		</StackPanel>
@@ -158,6 +305,21 @@
 				SelectedItems="{Binding TimezoneSelectedList}"
 				CornerRadius="8"
 				ItemsSource="{Binding TimezoneList}"/>
+		</Panel>
+
+        <Panel
+			Name="RacePopup"
+			ZIndex="1"
+			IsVisible="{Binding IsRaceListOpen}"
+			PointerPressed="UnShowListBoxPopup">
+			<Rectangle Fill="Black" Opacity="0.55"/>
+			<ListBox
+				Height="305"
+				Width="200"
+				SelectionMode="Multiple,Toggle"
+				SelectedItems="{Binding RaceSelectedList}"
+				CornerRadius="8"
+				ItemsSource="{Binding RaceList}"/>
 		</Panel>
 
 		<Panel

@@ -2,7 +2,7 @@ using BTTCGuildApp.Helpers;
 
 namespace BTTCGuildApp.Models
 {
-    public enum Branches
+    public enum GuildBranch
     {
         [StringValue("Capital")] Capital,
         [StringValue("Warborn")] Warborn,

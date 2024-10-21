@@ -21,8 +21,9 @@ namespace BTTCGuildApp.Helpers
 
     public static class StaticExtensionMethods
     {
-        public static string GetStringValue(this Enum value) {
+        public static string? GetStringValue(this Enum? value) {
             // Get the type
+            if (value is null) return null;
             Type type = value.GetType();
 
             // Get fieldinfo for this type
@@ -33,7 +34,7 @@ namespace BTTCGuildApp.Helpers
                 typeof(StringValueAttribute), false) as StringValueAttribute[];
 
             // Return the first if there was a match.
-            return attribs.Length > 0 ? attribs[0].StringValue : string.Empty;
+            return attribs.Length > 0 ? attribs[0].StringValue : null;
         }
     }
 }

@@ -9,5 +9,6 @@ public partial class AboutPageView : UserControl
     public AboutPageView()
     {
         InitializeComponent();
+        LOGGER.Debug("About Page Initialized");
     }
 }

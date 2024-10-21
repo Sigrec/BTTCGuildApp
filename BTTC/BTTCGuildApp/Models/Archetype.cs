@@ -2,7 +2,7 @@ using BTTCGuildApp.Helpers;
 
 namespace BTTCGuildApp.Models
 {
-    public enum Archetypes
+    public enum Archetype
     {
         [StringValue("Bard")] Bard,
         [StringValue("Cleric")] Cleric,

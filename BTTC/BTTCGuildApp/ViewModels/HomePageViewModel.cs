@@ -1,10 +1,9 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using Avalonia.Collections;
-using Avalonia.Controls;
 using BTTCGuildApp.Helpers;
 using BTTCGuildApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,37 +13,59 @@ namespace BTTCGuildApp.ViewModels
 {
     public partial class HomePageViewModel : ViewModelBase
     {
-        public string[] ArchetypeList { get; } = Enum.GetValues<Archetypes>().Select(x => x.GetStringValue()).ToArray();
+        public string[] ArchetypeList { get; } = Enum.GetValues<Archetype>().Select(x => x.GetStringValue()).ToArray()!;
         [ObservableProperty] private bool _isArchetypeListOpen = false;
-        public AvaloniaList<string> ArchetypeSelectedList { get; }  = [];
-        [ObservableProperty] private string _archetypeSelectedListTooltip = string.Empty;
+        public AvaloniaList<string> ArchetypeSelectedList { get; } = [];
+        [ObservableProperty] private string _archetypeSelectedListTooltip = "None";
         [RelayCommand] private void ToggleArchetypeList() => IsArchetypeListOpen ^= true;
+        [RelayCommand] private void ClearArchetypeSelectedList() => RaceSelectedList.Clear();
 
-        public string[] ArtisanList { get; } = Enum.GetValues<Artisans>().Select(x => x.GetStringValue()).ToArray();
+        public string[] ArtisanList { get; } = Enum.GetValues<Artisan>().Select(x => x.GetStringValue()).ToArray()!;
         [ObservableProperty] private bool _isArtisanListOpen = false;
         public AvaloniaList<string> ArtisanSelectedList { get; } = [];
-        [ObservableProperty] private string _artisanSelectedListTooltip = string.Empty;
+        [ObservableProperty] private string _artisanSelectedListTooltip = "None";
         [RelayCommand] private void ToggleArtisanList() => IsArtisanListOpen ^= true;
+        [RelayCommand] private void ClearArtisanSelectedList() => ArtisanSelectedList.Clear();
 
-        public string[] BranchList { get; } = Enum.GetValues<Branches>().Select(x => x.GetStringValue()).ToArray();
+        public string[] BranchList { get; } = Enum.GetValues<GuildBranch>().Select(x => x.GetStringValue()).ToArray()!;
         [ObservableProperty] private bool _isBranchListOpen = false;
         public AvaloniaList<string> BranchSelectedList { get; } = [];
-        [ObservableProperty] private string _branchSelectedListTooltip = string.Empty;
+        [ObservableProperty] private string _branchSelectedListTooltip = "None";
         [RelayCommand] private void ToggleBranchList() => IsBranchListOpen ^= true;
+        [RelayCommand] private void ClearBranchSelectedList() => BranchSelectedList.Clear();
 
-        public string[] TimezoneList { get; } = Enum.GetValues<Timezones>().Select(x => x.GetStringValue()).ToArray();
+        public string[] TimezoneList { get; } = Enum.GetValues<Timezone>().Select(x => x.GetStringValue()).ToArray()!;
         [ObservableProperty] private bool _isTimezoneListOpen = false;
         public AvaloniaList<string> TimezoneSelectedList { get; } = [];
-        [ObservableProperty] private string _timezoneSelectedListTooltip = string.Empty;
+        [ObservableProperty] private string _timezoneSelectedListTooltip = "None";
         [RelayCommand] private void ToggleTimezoneList() => IsTimezoneListOpen ^= true;
+        [RelayCommand] private void ClearTimezoneSelectedList() => TimezoneSelectedList.Clear();
 
-        public string[] RolePlayPriorityList { get; } = Enum.GetValues<RolePlayPriority>().Select(x => x.GetStringValue()).ToArray();
+        public string[] RaceList { get; } = Enum.GetValues<Race>().Select(x => x.GetStringValue()).ToArray()!;
+        [ObservableProperty] private bool _isRaceListOpen = false;
+        public AvaloniaList<string> RaceSelectedList { get; } = [];
+        [ObservableProperty] private string _raceSelectedListTooltip = "None";
+        [RelayCommand] private void ToggleRaceList() => IsRaceListOpen ^= true;
+        [RelayCommand] private void ClearRaceSelectedList() => RaceSelectedList.Clear();
+
+        public string[] RolePlayPriorityList { get; } = Enum.GetValues<RolePlayPriority>().Select(x => x.GetStringValue()).ToArray()!;
         [ObservableProperty] private bool _isRolePlayPriorityListOpen = false;
         public AvaloniaList<string> RolePlayPrioritySelectedList { get; } = [];
-        [ObservableProperty] private string _rolePlayPrioritySelectedListTooltip = string.Empty;
+        [ObservableProperty] private string _rolePlayPrioritySelectedListTooltip = "None";
         [RelayCommand] private void ToggleRolePlayPriorityList() => IsRolePlayPriorityListOpen ^= true;
+        [RelayCommand] private void ClearRolePlayPrioritySelectedList() => RolePlayPrioritySelectedList.Clear();
 
-        public AvaloniaList<GuildMemberModel> AnalyzedList { get; set; } = new AvaloniaList<GuildMemberModel>();
+        public static AvaloniaList<GuildMemberModel> QueriedMemberList { get; } = [];
+        [ObservableProperty] private bool _isDataGridVisible = false;
+        // [RelayCommand] private async Task StartGuildSheetSearchAsync()
+        // {
+        //     KeyValuePair<List<string>, List<GuildMemberModel>>? sheetData = await GuildSpreadsheet.GetGenericInfoSheetData();
+        //     if (sheetData is not null)
+        //     {
+        //         AnalyzedList.Clear();
+        //         AnalyzedList.AddRange(sheetData.Value.Value);
+        //     }
+        // }
 
         public HomePageViewModel()
         {
@@ -111,56 +132,45 @@ namespace BTTCGuildApp.ViewModels
 
         private void CollectionTooltipUpdate(AvaloniaList<string> data, string listName)
         {
-            StringBuilder newToolTip = new StringBuilder();
-            if (data != null && data.Any())
+            // Early exit if data is null or empty
+            if (data is null || data.Count == 0)
             {
-                foreach (string y in data.OrderBy(x => x))
-                {
-                    newToolTip.AppendLine(y);
-                }
+                SetTooltipForListName(listName, "None");
+                return;
+            }
 
-                switch (listName)
-                {
-                    case "Archetype":
-                        ArchetypeSelectedListTooltip = newToolTip.ToString().Trim();
-                        break;
-                    case "Artisan":
-                        ArtisanSelectedListTooltip = newToolTip.ToString().Trim();
-                        break;
-                    case "Branch":
-                        BranchSelectedListTooltip = newToolTip.ToString().Trim();
-                        break;
-                    case "Timezone":
-                        TimezoneSelectedListTooltip = newToolTip.ToString().Trim();
-                        break;
-                    case "RolePlayPriority":
-                        RolePlayPrioritySelectedListTooltip = newToolTip.ToString().Trim();
-                        break;
-                }
-            }
-            else
+            // Sort the data once
+            var sortedData = data.OrderBy(x => x).ToList();
+            
+            // Use StringBuilder to efficiently build the tooltip string
+            var newToolTip = new StringBuilder();
+            foreach (var item in sortedData)
             {
-                switch (listName)
-                {
-                    case "Archetype":
-                        ArchetypeSelectedListTooltip = string.Empty;
-                        break;
-                    case "Artisan":
-                        ArchetypeSelectedListTooltip = string.Empty;
-                        break;
-                    case "Branch":
-                        ArchetypeSelectedListTooltip = string.Empty;
-                        break;
-                    case "Timezone":
-                        ArchetypeSelectedListTooltip = string.Empty;
-                        break;
-                    case "RolePlayPriority":
-                        ArchetypeSelectedListTooltip = string.Empty;
-                        break;
-                }
+                newToolTip.AppendLine(item);
             }
-            LOGGER.Debug($"Updateing {listName} Selections to \n{newToolTip}");
-            newToolTip.Clear();
+
+            // Trim the tooltip string and set it to the appropriate property
+            SetTooltipForListName(listName, newToolTip.ToString().Trim());
+            LOGGER.Debug($"Updating \"{listName}\" Selections to \"{newToolTip}\"");
+        }
+
+        private void SetTooltipForListName(string listName, string tooltip)
+        {
+            // Use a dictionary to map listName to the corresponding property setter
+            var tooltipDictionary = new Dictionary<string, Action<string>>
+            {
+                { "Archetype", tooltip => ArchetypeSelectedListTooltip = tooltip },
+                { "Artisan", tooltip => ArtisanSelectedListTooltip = tooltip },
+                { "Branch", tooltip => BranchSelectedListTooltip = tooltip },
+                { "Timezone", tooltip => TimezoneSelectedListTooltip = tooltip },
+                { "RolePlayPriority", tooltip => RolePlayPrioritySelectedListTooltip = tooltip }
+            };
+
+            // Set the tooltip if the listName exists in the dictionary
+            if (tooltipDictionary.ContainsKey(listName))
+            {
+                tooltipDictionary[listName](tooltip);
+            }
         }
     }
 }

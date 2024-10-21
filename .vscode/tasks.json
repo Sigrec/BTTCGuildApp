@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+        {
+            "type": "dotnet",
+            "task": "build s:\\AshesOfCreation\\BTTC\\BTTCGuildApp\\BTTC\\BTTCGuildApp\\BTTCGuildApp.csproj",
+            "file": "s:\\AshesOfCreation\\BTTC\\BTTCGuildApp\\BTTC\\BTTCGuildApp\\BTTCGuildApp.csproj",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "dotnet: build Guild App"
+        }
+    ]
+}

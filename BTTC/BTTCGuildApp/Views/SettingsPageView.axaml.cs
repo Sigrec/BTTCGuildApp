@@ -9,5 +9,6 @@ public partial class SettingsPageView : UserControl
     public SettingsPageView()
     {
         InitializeComponent();
+        LOGGER.Debug("Settings Page Initialized");
     }
 }
