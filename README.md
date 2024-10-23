@@ -1,7 +1,7 @@
 # BTTC
 Black Talon Trading Company (BTTC) windows desktop application for Ashes of Creation (AoC)
 ***
-## [ChangeLog](CHANGELOG.md) (Right Click Exe → Properties → Details to see current File Version)
+## [ChangeLog](CHANGELOG.txt) (Right Click Exe → Properties → Details to see current File Version)
 ***
 ## Usage
 >[**Windows Download** (Current Supported Version = 1.0)](https://github.com/Sigrec/BTTCGuildApp/releases)
