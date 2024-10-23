@@ -69,9 +69,10 @@ public partial class HomePageView : UserControl
         {
             viewModel.IsDataGridVisible = false;
             viewModel.IsSearchWarningMessageVisible = true;
-            LOGGER.Info("Search Returned no Data");
+            LOGGER.Info("Search Returned no Data!");
             return;
         }
+        LOGGER.Info("Search Returned Data!");
 
         var dataGrid = GuildMemberSearchDataGrid;
 
