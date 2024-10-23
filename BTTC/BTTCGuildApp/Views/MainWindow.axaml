@@ -6,7 +6,7 @@
 		xmlns:i="https://github.com/projektanker/icons.avalonia"
         mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="680"
         MinWidth="960"
-        MinHeight="680"
+        MinHeight="695"
         x:Class="BTTCGuildApp.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/BTTC.ico"
