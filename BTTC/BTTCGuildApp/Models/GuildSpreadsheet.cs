@@ -1,81 +1,79 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using Avalonia.Collections;
-using Avalonia.Logging;
 using BTTCGuildApp.Helpers;
 
 namespace BTTCGuildApp.Models
 {
-    public class GuildSpreadsheet
+    public partial class GuildSpreadsheet
     {
         private static readonly HttpClient _httpClient = new HttpClient();
         public const string URL = "https://docs.google.com/spreadsheets/d/1BPuFezUHKC1mJduXt0SiY3d8f6r98fEVczg9PaCQ14g/gviz/tq?tqx=out:csv&headers=0";
+        public static readonly HashSet<string> HEADERS = [
+            "Discord Name", "Character Name", "Branch", "Timezone", "Access Level", "Grandmaster 1", "Grandmaster 2", "Primary Archetype", "Secondary Archetype", "Class", "Race", "Ideal Node", "RP Priority",
+        ];
         public const byte START_INDEX = 2;
         public const short END_INDEX = 503;
         public const string GENERIC_SHEET = "Generic Info";
         public const string ARTISAN_SHEET = "Artisans";
         public const string ARCHETYPE_SHEET = "Archetypes";
         public const char GENERIC_SHEET_START_COLUMN = 'A';
-        public const char GENERIC_SHEET_END_COLUMN = 'G';
+        public const char GENERIC_SHEET_END_COLUMN = 'H';
         public const char ARCHETYPE_SHEET_START_COLUMN = 'A';
         public const char ARCHETYPE_SHEET_END_COLUMN = 'E';
         public const char ARTISAN_SHEET_START_COLUMN = 'A';
         public const char ARTISAN_SHEET_END_COLUMN = 'D';
 
-        public static async Task<KeyValuePair<List<string>, List<GuildMemberModel>>?> GetSheetData( 
+        [GeneratedRegex(@"""""([^"",]+)""""")] private static partial Regex QuoteRegex();
+
+        public static async Task<IEnumerable<GuildMemberModel>?> GetSheetData( 
             AvaloniaList<string> branch,
             AvaloniaList<string> race, 
             AvaloniaList<string> timezone, 
             AvaloniaList<string> rpPriority,
             AvaloniaList<string> artisan,
             AvaloniaList<string> primaryArchetype,
+            string? accessLevel,
+            AvaloniaList<string> idealNode,
             string memberName = "")
         {
             try
             {
-                bool getAll = !string.IsNullOrWhiteSpace(memberName) || (branch.Count == 0 && race.Count == 0 && timezone.Count == 0 && rpPriority.Count == 0 && artisan.Count == 0 && primaryArchetype.Count == 0);
                 List<Task<string>> sheetCalls = [];
-                if (getAll || branch.Count > 0 || race.Count > 0 || timezone.Count > 0 || rpPriority.Count > 0)
-                {
-                    string genericSheetQuery = $"&sheet='{GENERIC_SHEET}'&range={GENERIC_SHEET_START_COLUMN}{START_INDEX}:{GENERIC_SHEET_END_COLUMN}{END_INDEX}&tq=SELECT%20A%2CB%2CC%2CD%2CE%2CF%2CG";
-                    LOGGER.Info($"Making API Call to Generic Sheet: \"{URL}{genericSheetQuery}\"");
-                    sheetCalls.Add(_httpClient.GetStringAsync($"{URL}{genericSheetQuery}"));
-                    LOGGER.Debug($"API Call to Generic Sheet Finished");
-                }
+                string genericSheetQuery = $"&sheet='{GENERIC_SHEET}'&range={GENERIC_SHEET_START_COLUMN}{START_INDEX}:{GENERIC_SHEET_END_COLUMN}{END_INDEX}&tq=SELECT%20A%2CB%2CC%2CD%2CE%2CF%2CG%2CH";
+                LOGGER.Debug($"Making API Call to Generic Sheet: \"{URL}{genericSheetQuery}\"");
+                sheetCalls.Add(_httpClient.GetStringAsync($"{URL}{genericSheetQuery}"));
 
-                if (getAll || artisan.Count > 0)
-                {
-                    string artisanSheetQuery = $"&sheet={ARTISAN_SHEET}&range={ARTISAN_SHEET_START_COLUMN}{START_INDEX}:{ARTISAN_SHEET_END_COLUMN}{END_INDEX}&tq=SELECT%20A%2CB%2CC%2CD";
-                    LOGGER.Info($"Making API Call to Artisan Sheet: \"{URL}{artisanSheetQuery}\"");
-                    sheetCalls.Add(_httpClient.GetStringAsync($"{URL}{artisanSheetQuery}"));
-                    LOGGER.Debug($"API Call to Artisan Sheet Finished");
-                }
+                string artisanSheetQuery = $"&sheet={ARTISAN_SHEET}&range={ARTISAN_SHEET_START_COLUMN}{START_INDEX}:{ARTISAN_SHEET_END_COLUMN}{END_INDEX}&tq=SELECT%20A%2CB%2CC%2CD";
+                LOGGER.Debug($"Making API Call to Artisan Sheet: \"{URL}{artisanSheetQuery}\"");
+                sheetCalls.Add(_httpClient.GetStringAsync($"{URL}{artisanSheetQuery}"));
 
-                if (getAll || primaryArchetype.Count > 0)
-                {   
-                    string archetypeSheetQuery = $"&sheet={ARCHETYPE_SHEET}&range={ARCHETYPE_SHEET_START_COLUMN}{START_INDEX}:{ARCHETYPE_SHEET_END_COLUMN}{END_INDEX}&tq=SELECT%20A%2CB%2CC%2CD%2CE";
-                    LOGGER.Info($"Making API Call to Archetype Sheet: \"{URL}{archetypeSheetQuery}\"");
-                    sheetCalls.Add(_httpClient.GetStringAsync($"{URL}{archetypeSheetQuery}"));
-                    LOGGER.Debug($"API Call to Archetype Sheet Finished");
-                }
+                string archetypeSheetQuery = $"&sheet={ARCHETYPE_SHEET}&range={ARCHETYPE_SHEET_START_COLUMN}{START_INDEX}:{ARCHETYPE_SHEET_END_COLUMN}{END_INDEX}&tq=SELECT%20A%2CB%2CC%2CD%2CE";
+                LOGGER.Debug($"Making API Call to Archetype Sheet: \"{URL}{archetypeSheetQuery}\"");
+                sheetCalls.Add(_httpClient.GetStringAsync($"{URL}{archetypeSheetQuery}"));
+
                 string[] responses = await Task.WhenAll(sheetCalls);
-                var parsedData = ParseCsvData(responses);
+                LOGGER.Debug($"API Calls to Sheet Finished");
 
-                return new KeyValuePair<List<string>, List<GuildMemberModel>>(parsedData.Key, FilterMembers(
-                    parsedData.Value,
+                return FilterMembers(
+                    ParseCsvData(responses),
                     branch,
                     race, 
                     timezone, 
                     rpPriority, 
                     artisan,
                     primaryArchetype,
+                    accessLevel != null ? EnumHelper.GetEnumFromStringValue<AccessLevel>(accessLevel) : null,
+                    idealNode,
                     memberName
-                ));
+                );
             }
             catch (HttpRequestException e)
             {
@@ -84,16 +82,7 @@ namespace BTTCGuildApp.Models
             return null;
         }
 
-        private static string GetQuery(List<string> response, string column)
-        {
-            if (response == null || response.Count == 0)
-            {
-                return string.Empty;
-            }
-            return string.Join("%20OR%20", response.Select(r => $"({column}%20like%20'{r}')"));
-        }
-
-        public static List<GuildMemberModel> FilterMembers(
+        public static IEnumerable<GuildMemberModel> FilterMembers(
             List<GuildMemberModel> members,
             AvaloniaList<string> branch, 
             AvaloniaList<string> race, 
@@ -101,6 +90,8 @@ namespace BTTCGuildApp.Models
             AvaloniaList<string> rpPriority,
             AvaloniaList<string> artisan,
             AvaloniaList<string> primaryArchetype,
+            AccessLevel? accessLevel,
+            AvaloniaList<string> idealNode,
             string memberName = "")
         {
             return members
@@ -109,15 +100,16 @@ namespace BTTCGuildApp.Models
                     (branch.Count == 0 || branch.Contains(member.Branch)) &&
                     (race.Count == 0 || race.Contains(member.Race)) &&
                     (timezone.Count == 0 || timezone.Contains(member.Timezone)) &&
+                    (accessLevel is null || ((accessLevel.Value & EnumHelper.GetEnumFromStringValue<AccessLevel>(member.AccessLevel)) == EnumHelper.GetEnumFromStringValue<AccessLevel>(member.AccessLevel))) &&
                     (artisan.Count == 0 || artisan.Contains(member.GrandmasterArtisanOne) || artisan.Contains(member.GrandmasterArtisanTwo)) &&
                     (primaryArchetype.Count == 0 || primaryArchetype.Contains(member.PrimaryArchetype)) &&
+                    (idealNode.Count == 0 || idealNode.Contains(member.IdealNode)) &&
                     (rpPriority.Count == 0 || rpPriority.Contains(member.RpPriority))
-                ).ToList();
+                );
         }
 
-        private static KeyValuePair<List<string>, List<GuildMemberModel>> ParseCsvData(string[] csvDataList)
+        private static List<GuildMemberModel> ParseCsvData(string[] csvDataList)
         {
-            IEnumerable<string> headersConcat = [];
             List<string[]> csvData = [];
             foreach(string curCsvData in csvDataList)
             {
@@ -134,62 +126,72 @@ namespace BTTCGuildApp.Models
                 }
             }
 
-            List<string> headers = [.. csvData[0]];
-            if (headers.Contains("Class (Auto-populated)"))
-            {
-                headers[headers.IndexOf("Class (Auto-populated)")] = "Class";
-            }
-            LOGGER.Debug($"Headers: [ {string.Join(',', headers)} ]");
-            HashSet<string> headerSet = [.. headers];
-
             List<GuildMemberModel> result = [];
+            LOGGER.Debug("Members:");
+            LOGGER.Debug(string.Join(",", csvData[1]));
             foreach (string[] entry in csvData.Skip(1))
             {
-                result.Add(new GuildMemberModel(
-                    headerSet.Contains("Discord Name") ? entry[0] : string.Empty,
-                    headerSet.Contains("Character Name") ? entry[1] : string.Empty,
-                    headerSet.Contains("Branch") ? entry[headers.IndexOf("Branch")]: string.Empty,
-                    headerSet.Contains("Ideal Node Type") ? entry[headers.IndexOf("Ideal Node Type")] : string.Empty,
-                    headerSet.Contains("Race") ? entry[headers.IndexOf("Race")] : string.Empty,
-                    headerSet.Contains("Timezone") ? entry[headers.IndexOf("Timezone")] : string.Empty,
-                    headerSet.Contains("Grandmaster 1") ? TrimAfterDash(entry[headers.IndexOf("Grandmaster 1")]) : string.Empty,
-                    headerSet.Contains("Grandmaster 2") ? TrimAfterDash(entry[headers.IndexOf("Grandmaster 2")]) : string.Empty,
-                    headerSet.Contains("Primary Archetype") ? entry[headers.IndexOf("Primary Archetype")] : string.Empty,
-                    headerSet.Contains("Secondary Archetype") ? entry[headers.IndexOf("Secondary Archetype")] : string.Empty,
-                    headerSet.Contains("Class") ? entry[headers.IndexOf("Class")] : string.Empty,
-                    headerSet.Contains("RP Priority") ? entry[headers.IndexOf("RP Priority")] : string.Empty
-                ));
+                GuildMemberModel newMember = new GuildMemberModel()
+                    .SetDiscordName(entry[0])
+                    .SetCharacterName(entry[1])
+                    .SetBranch(entry[2])
+                    .SetIdealNode(entry[3])
+                    .SetRace(entry[4])
+                    .SetTimezone(entry[5])
+                    .SetRpPriority(entry[6])
+                    .SetAccessLevel(entry[7])
+                    .SetGrandmasterArtisanOne(entry[8])
+                    .SetGrandmasterArtisanTwo(entry[9])
+                    .SetPrimaryArchetype(entry[10])
+                    .SetSecondaryArchetype(entry[11])
+                    .SetClass(entry[12]);
+                LOGGER.Debug(newMember.ToArrayString());
+                result.Add(newMember);
             }
-
-            LOGGER.Debug("Members:");
-            foreach (GuildMemberModel member in result)
-            {
-                LOGGER.Debug(member.ToArrayString());
-            }
-
-            return new KeyValuePair<List<string>, List<GuildMemberModel>>(headers, result);
+            return result;
         }
 
         private static List<string[]> CleanCsvData(string csvData)
         {
             StringBuilder csvClean = new StringBuilder(csvData.Length);
-            foreach (char c in csvData)
+            foreach (char c in QuoteRegex().Replace(csvData, "&quot;$1&quot;"))
             {
                 if (c != '"')
                 {
                     csvClean.Append(c);
                 }
             }
-            csvData = csvClean.ToString();
+            csvData = HttpUtility.HtmlDecode(csvClean.ToString());
             string[] splitData = csvData.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
-            List<string[]> result = [];
+            List<string[]> result = new(splitData.Length);
             foreach (string row in splitData)
             {
                 result.Add(row.Split(','));
             }
             return result;
         }
-        
+    }
+
+    public class GuildMemberModel
+    {
+        public string DiscordName { get; private set; }
+        public string CharacterName { get; private set; }
+        public string Branch { get; private set; }
+        public string AccessLevel { get; private set; }
+        public string Race { get; private set; }
+        public string Timezone { get; private set; }
+        public string GrandmasterArtisanOne { get; private set; }
+        public string GrandmasterArtisanTwo { get; private set; }
+        public string PrimaryArchetype { get; private set; }
+        public string SecondaryArchetype { get; private set; }
+        public string Class { get; private set; }
+        public string IdealNode { get; private set; }
+        public string RpPriority { get; private set; }
+
+        public GuildMemberModel()
+        {
+        }
+
         public static string TrimAfterDash(string input)
         {
             int index = input.IndexOf(" - ");
@@ -197,51 +199,85 @@ namespace BTTCGuildApp.Models
             {
                 return input[..index];
             }
-            return input;
+            return input.Trim();
         }
-    }
 
-    public class GuildMemberModel
-    {
-        public string DiscordName { get; set; }
-        public string CharacterName { get; set; }
-        public string Branch { get; set; }
-        public string IdealNodeType { get; set; }
-        public string Race { get; set; }
-        public string Timezone { get; set; }
-        public string GrandmasterArtisanOne { get; set; }
-        public string GrandmasterArtisanTwo { get; set; }
-        public string PrimaryArchetype { get; set; }
-        public string SecondaryArchetype { get; set; }
-        public string Class { get; set; }
-        public string RpPriority { get; set; }
-        
-        public GuildMemberModel(
-            string discordName,
-            string characterName,
-            string branch,
-            string idealNodeType,
-            string race,
-            string timezone,
-            string grandmasterArtisanOne,
-            string grandmasterArtisanTwo,
-            string primaryArchetype,
-            string secondaryArchetype,
-            string classType,
-            string rpPriority)
+        public GuildMemberModel SetDiscordName(string discordName)
         {
-            DiscordName = discordName;
-            CharacterName = characterName;
-            Branch = branch;
-            IdealNodeType = idealNodeType;
-            Race = race;
-            Timezone = timezone;
-            GrandmasterArtisanOne = grandmasterArtisanOne;
-            GrandmasterArtisanTwo = grandmasterArtisanTwo;
-            PrimaryArchetype = primaryArchetype;
-            SecondaryArchetype = secondaryArchetype;
-            Class = classType;
-            RpPriority = rpPriority;
+            this.DiscordName = discordName.Trim();
+            return this;
+        }
+
+        public GuildMemberModel SetCharacterName(string characterName)
+        {
+            this.CharacterName = characterName.Trim();
+            return this;
+        }
+
+        public GuildMemberModel SetBranch(string branch)
+        {
+            this.Branch = branch;
+            return this;
+        }
+
+        public GuildMemberModel SetAccessLevel(string accessLevel)
+        {
+            this.AccessLevel = accessLevel;
+            return this;
+        }
+
+        public GuildMemberModel SetRace(string race)
+        {
+            this.Race = race;
+            return this;
+        }
+
+        public GuildMemberModel SetTimezone(string timezone)
+        {
+            this.Timezone = timezone;
+            return this;
+        }
+
+        public GuildMemberModel SetGrandmasterArtisanOne(string grandmasterArtisanOne)
+        {
+            this.GrandmasterArtisanOne = TrimAfterDash(grandmasterArtisanOne);
+            return this;
+        }
+
+        public GuildMemberModel SetGrandmasterArtisanTwo(string grandmasterArtisanTwo)
+        {
+            this.GrandmasterArtisanTwo = TrimAfterDash(grandmasterArtisanTwo);
+            return this;
+        }
+
+        public GuildMemberModel SetPrimaryArchetype(string primaryArchetype)
+        {
+            this.PrimaryArchetype = primaryArchetype;
+            return this;
+        }
+
+        public GuildMemberModel SetSecondaryArchetype(string secondaryArchetype)
+        {
+            this.SecondaryArchetype = secondaryArchetype;
+            return this;
+        }
+
+        public GuildMemberModel SetClass(string classType)
+        {
+            this.Class = classType;
+            return this;
+        }
+
+        public GuildMemberModel SetIdealNode(string idealNode)
+        {
+            this.IdealNode = idealNode;
+            return this;
+        }
+
+        public GuildMemberModel SetRpPriority(string rpPriority)
+        {
+            this.RpPriority = rpPriority;
+            return this;
         }
 
         public override string ToString()
@@ -250,14 +286,15 @@ namespace BTTCGuildApp.Models
                 DiscordName: {DiscordName}
                 CharacterName: {CharacterName}
                 Branch: {Branch}
-                IdealNodeType: {IdealNodeType}
-                Race: {Race}
                 Timezone: {Timezone}
+                AccessLevel: {AccessLevel}
                 GrandmasterArtisanOne: {GrandmasterArtisanOne}
                 GrandmasterArtisanTwo: {GrandmasterArtisanTwo}
                 PrimaryArchetype: {PrimaryArchetype}
                 SecondaryArchetype: {SecondaryArchetype}
                 Class: {Class}
+                Race: {Race}
+                IdealNodeType: {IdealNode}
                 RpPriority: {RpPriority}
                 ";
         }
@@ -268,14 +305,15 @@ namespace BTTCGuildApp.Models
                 DiscordName,
                 CharacterName,
                 Branch,
-                IdealNodeType,
-                Race,
                 Timezone,
+                AccessLevel,
                 GrandmasterArtisanOne,
                 GrandmasterArtisanTwo,
                 PrimaryArchetype,
                 SecondaryArchetype,
+                Race,
                 Class,
+                IdealNode,
                 RpPriority
             ])}]";
         }

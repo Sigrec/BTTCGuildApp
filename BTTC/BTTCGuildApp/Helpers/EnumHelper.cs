@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Avalonia.Logging;
 
 namespace BTTCGuildApp.Helpers
 {
@@ -7,7 +9,7 @@ namespace BTTCGuildApp.Helpers
     {
         public static TEnum? GetEnumFromStringValue<TEnum>(string stringValue) where TEnum : Enum
         {
-            if (string.IsNullOrEmpty(stringValue))
+            if (string.IsNullOrWhiteSpace(stringValue))
             {
                 return default;
             }
@@ -17,7 +19,7 @@ namespace BTTCGuildApp.Helpers
                 // Get the StringValueAttribute associated with the enum field
                 StringValueAttribute[] attribute = field.GetCustomAttributes(
                     typeof(StringValueAttribute), false) as StringValueAttribute[];
-                if (attribute != null && attribute[0].StringValue.Contains(stringValue, StringComparison.OrdinalIgnoreCase))
+                if (attribute != null && attribute.Length > 0 && attribute[0].StringValue.Contains(stringValue, StringComparison.OrdinalIgnoreCase))
                 {
                     return (TEnum)field.GetValue(null);
                 }

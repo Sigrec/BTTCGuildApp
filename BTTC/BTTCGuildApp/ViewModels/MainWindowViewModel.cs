@@ -19,7 +19,7 @@ namespace BTTCGuildApp.ViewModels
         public ObservableCollection<MenuItem> MenuItems { get; } =
         [
             new MenuItem(typeof(HomePageView), "fa-solid fa-house"),
-            new MenuItem(typeof(SettingsPageView), "fa-solid fa-gear"),
+            // new MenuItem(typeof(SettingsPageView), "fa-solid fa-gear"),
             new MenuItem(typeof(AboutPageView), "fa-solid fa-circle-info"),
         ];
         [ObservableProperty] private MenuItem? _selectedMenuItem;

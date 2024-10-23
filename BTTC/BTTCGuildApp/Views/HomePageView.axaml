@@ -10,18 +10,17 @@
 	<Panel>
 		<StackPanel 
 			Orientation="Vertical" 
-			Margin="20 15 20 0"
+			Margin="20 0 20 0"
 			Spacing="10">
 			<TextBlock
 				Text="Home"
 				FontSize="30"
 				FontWeight="Bold"
-				DockPanel.Dock="Top"
 				Foreground=""
-				Margin="12 0 0 0"/>
-            <!-- TODO Border bottom corner radius not working + margin bottom not working -->
+                VerticalAlignment="Center"
+				Margin="30 30 0 5"/>
 			<Border
-				CornerRadius="8 8 8 8"
+				CornerRadius="8"
 				ClipToBounds="True"
                 Margin="10 0 10 0"
                 Width="850"
@@ -29,46 +28,43 @@
 					<StackPanel
 						Orientation="Vertical"
 						Spacing="8"
-                        Margin="0 0 0 18"
 						Background="rgba(22, 20, 19, 0.7)">
+                        <TextBlock
+                            Text="Guild Search"
+                            FontSize="24"
+                            FontWeight="SemiBold"
+                            Margin="30 20 0 2"
+                            VerticalAlignment="Center"
+                            Foreground="rgba(219, 183, 77, 1)"/>
                         <StackPanel
-                            Margin="18 10 0 0"
+                            Margin="28 0 0 0"
                             Orientation="Horizontal"
 							Spacing="10">
-                            <TextBlock
-                                Text="Guild Search"
-                                FontSize="20"
-                                FontWeight="SemiBold"
-                                VerticalAlignment="Center"
-                                Foreground="rgba(219, 183, 77, 1)"/>
+                            <TextBox
+                                Name="MemberNameTextBox"
+                                Watermark="Character/Discord Name"
+                                Width="375"
+                                HorizontalAlignment="Left"
+                                BorderBrush="rgba(219, 183, 77, 1)"
+                                BorderThickness="2"/>
                             <Button
                                 Click="StartGuildSheetSearchAsync"
                                 i:Attached.Icon="fa-solid fa-magnifying-glass"
-                                FontSize="20"
+                                FontSize="22"
                                 Foreground="rgba(219, 183, 77, 1)"
                                 Background="rgba(45, 45, 45, 1)"
                                 HorizontalContentAlignment="Center"
                                 VerticalContentAlignment="Center"
+                                VerticalAlignment="Center"
                                 HorizontalAlignment="Left"/>
                         </StackPanel>
-                        <TextBox
-                            Name="MemberNameTextBox"
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Watermark="Character/Discord Name"
-                            Width="375"
-                            Height="33"
-                            HorizontalAlignment="Left"
-                            Margin="18 0 0 0"
-                            BorderBrush="rgba(219, 183, 77, 1)"
-                            BorderThickness="2"/>
 						<Grid
 							Name="GuildSearchGrid"
 							DockPanel.Dock="Bottom"
 							ShowGridLines="False"
-							ColumnDefinitions="Auto,Auto,Auto"
+							ColumnDefinitions="Auto,Auto,Auto,Auto"
 							RowDefinitions="Auto,Auto"
-							Margin="18 0 10 0">
+							Margin="28 0 10 17">
 							<Grid.Styles>
 								<Style Selector="ComboBox">
 									<Setter Property="Width" Value="175"/>
@@ -90,7 +86,7 @@
                                     VerticalContentAlignment="Center"
                                     HorizontalAlignment="Left"/>
                                 <Button
-                                    Width="175"
+                                    Width="145"
                                     Height="33"
                                     Margin="7"
                                     Content="Race"
@@ -114,7 +110,7 @@
                                     VerticalContentAlignment="Center"
                                     HorizontalAlignment="Left"/>
                                 <Button
-                                    Width="175"
+                                    Width="145"
                                     Height="33"
                                     Margin="7"
                                     Content="Branch"
@@ -138,7 +134,7 @@
                                     VerticalContentAlignment="Center"
                                     HorizontalAlignment="Left"/>
                                 <Button
-                                    Width="175"
+                                    Width="145"
                                     Height="33"
                                     Margin="7"
                                     Content="Archetype"
@@ -146,6 +142,30 @@
                                     VerticalContentAlignment="Center"
                                     ToolTip.Tip="{Binding ArchetypeSelectedListTooltip}"
                                     Command="{Binding ToggleArchetypeListCommand}"/>
+                            </StackPanel>
+                            <StackPanel
+                                Grid.Row="0"
+                                Grid.Column="3"
+                                Orientation="Horizontal"
+                                Spacing="1">
+                                <Button
+                                    Command="{Binding ClearIdealNodeSelectedListCommand}"
+                                    i:Attached.Icon="fa-solid fa-arrows-rotate"
+                                    FontSize="20"
+                                    Foreground="rgba(219, 183, 77, 1)"
+                                    Background="rgba(45, 45, 45, 1)"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Left"/>
+                                <Button
+                                    Width="145"
+                                    Height="33"
+                                    Margin="7"
+                                    Content="Ideal Node"
+                                    FontSize="16"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding IdealNodeSelectedListTooltip}"
+                                    Command="{Binding ToggleIdealNodeListCommand}"/>
                             </StackPanel>
 							<StackPanel
                                 Grid.Row="1"
@@ -162,7 +182,7 @@
                                     VerticalContentAlignment="Center"
                                     HorizontalAlignment="Left"/>
                                 <Button
-                                    Width="175"
+                                    Width="145"
                                     Height="33"
                                     Margin="7"
                                     Content="Artisan"
@@ -186,7 +206,7 @@
                                     VerticalContentAlignment="Center"
                                     HorizontalAlignment="Left"/>
                                 <Button
-                                    Width="175"
+                                    Width="145"
                                     Height="33"
                                     Margin="7"
                                     Content="Timezone"
@@ -195,9 +215,33 @@
                                     ToolTip.Tip="{Binding TimezoneSelectedListTooltip}"
                                     Command="{Binding ToggleTimezoneListCommand}"/>
                             </StackPanel>
-							<StackPanel
+                            <StackPanel
                                 Grid.Row="1"
                                 Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="1">
+                                <Button
+                                    Command="{Binding ClearAccessLevelSelectedListCommand}"
+                                    i:Attached.Icon="fa-solid fa-arrows-rotate"
+                                    FontSize="20"
+                                    Foreground="rgba(219, 183, 77, 1)"
+                                    Background="rgba(45, 45, 45, 1)"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Left"/>
+                                <Button
+                                    Width="145"
+                                    Height="33"
+                                    Margin="7"
+                                    Content="Access Level"
+                                    FontSize="16"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding AccessLevelSelectedListTooltip}"
+                                    Command="{Binding ToggleAccessLevelListCommand}"/>
+                            </StackPanel>
+							<StackPanel
+                                Grid.Row="1"
+                                Grid.Column="3"
                                 Orientation="Horizontal"
                                 Spacing="1">
                                 <Button
@@ -210,16 +254,24 @@
                                     VerticalContentAlignment="Center"
                                     HorizontalAlignment="Left"/>
                                 <Button
-                                    Width="175"
+                                    Width="145"
                                     Height="33"
                                     Margin="7"
-                                    Content="RolePlayPriority"
+                                    Content="RP Priority"
                                     FontSize="16"
                                     VerticalContentAlignment="Center"
                                     ToolTip.Tip="{Binding RolePlayPrioritySelectedListTooltip}"
                                     Command="{Binding ToggleRolePlayPriorityListCommand}"/>
                             </StackPanel>
 						</Grid>
+                        <TextBlock
+                            Text="Search Returned no Data!"
+                            FontSize="24"
+                            FontWeight="SemiBold"
+                            Margin="28 -12 30 22"
+                            IsVisible="{Binding IsSearchWarningMessageVisible}"
+                            VerticalAlignment="Center"
+                            Foreground="rgba(219, 183, 77, 1)"/>
                         <DataGrid 
                             Name="GuildMemberSearchDataGrid"
                             ItemsSource="{Binding QueriedMemberList}"
@@ -241,7 +293,7 @@
                             VerticalAlignment="Center"
                             GridLinesVisibility="All"
                             FontWeight="Bold"
-                            Margin="18 0 18 18"
+                            Margin="28 -12 30 28"
                             SelectionMode="Single"/>
 					</StackPanel>
 			</Border>
@@ -314,7 +366,7 @@
 			PointerPressed="UnShowListBoxPopup">
 			<Rectangle Fill="Black" Opacity="0.55"/>
 			<ListBox
-				Height="305"
+				Height="343"
 				Width="200"
 				SelectionMode="Multiple,Toggle"
 				SelectedItems="{Binding RaceSelectedList}"
@@ -335,6 +387,36 @@
 				SelectedItems="{Binding RolePlayPrioritySelectedList}"
 				CornerRadius="8"
 				ItemsSource="{Binding RolePlayPriorityList}"/>
+		</Panel>
+
+        <Panel
+			Name="AccessLevelPopup"
+			ZIndex="1"
+			IsVisible="{Binding IsAccessLevelListOpen}"
+			PointerPressed="UnShowListBoxPopup">
+			<Rectangle Fill="Black" Opacity="0.55"/>
+			<ListBox
+				Height="305"
+				Width="200"
+				SelectionMode="Toggle"
+				SelectedItems="{Binding AccessLevelSelectedList}"
+				CornerRadius="8"
+				ItemsSource="{Binding AccessLevelList}"/>
+		</Panel>
+
+        <Panel
+			Name="IdealNodePopup"
+			ZIndex="1"
+			IsVisible="{Binding IsIdealNodeListOpen}"
+			PointerPressed="UnShowListBoxPopup">
+			<Rectangle Fill="Black" Opacity="0.55"/>
+			<ListBox
+				Height="152"
+				Width="200"
+				SelectionMode="Multiple,Toggle"
+				SelectedItems="{Binding IdealNodeSelectedList}"
+				CornerRadius="8"
+				ItemsSource="{Binding IdealNodeList}"/>
 		</Panel>
 	</Panel>
 </UserControl>

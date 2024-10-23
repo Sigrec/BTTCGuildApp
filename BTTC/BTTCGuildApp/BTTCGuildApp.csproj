@@ -4,26 +4,35 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <Optimize>True</Optimize>
+		<PlatformTarget>x64</PlatformTarget>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
         <NoWarn>CS8602;CS8618;CS8604</NoWarn>
+		<ApplicationIcon>Assets\BTTC.ico</ApplicationIcon>
+		<PublishTrimmed>True</PublishTrimmed>
+		<TrimMode>partial</TrimMode>
+		<PublishReadyToRun>True</PublishReadyToRun>
+		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
 
-        <!-- Versioning -->
-        <Version>1.0.0-snapshot</Version>
+		<!-- Versioning -->
+        <Version>1.0.0</Version>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
         <FileVersion>1.0.0.0</FileVersion>
-        <InformationalVersion>1.0.0-snapshot</InformationalVersion>
+        <InformationalVersion>1.0.0</InformationalVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <Folder Include="Controls\" />
         <Folder Include="Models\" />
         <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Remove="Assets\CapitalEmblem.ico" />
         <EmbeddedResource Include="NLog.config" />
+		<Content Include="Assets\BTTC.ico">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
     </ItemGroup>
 
     <ItemGroup>

@@ -7,6 +7,10 @@ namespace BTTCGuildApp.Views
         public MainWindow()
         {
             InitializeComponent();
+            Closing += (s, e) =>
+            {
+                LOGGER.Info("Closing BTTC Guild App");
+            };
         }
     }
 }

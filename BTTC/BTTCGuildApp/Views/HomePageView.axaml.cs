@@ -16,15 +16,16 @@ public partial class HomePageView : UserControl
     {
         { "Character Name", "CharacterName" },
         { "Branch", "Branch" },
-        { "Ideal Node Type", "IdealNodeType" },
+        { "Access Level", "AccessLevel" },
         { "Race", "Race" },
         { "Timezone", "Timezone" },
-        { "RP Priority", "RpPriority" },
         { "Grandmaster 1", "GrandmasterArtisanOne" },
         { "Grandmaster 2", "GrandmasterArtisanTwo" },
         { "Primary Archetype", "PrimaryArchetype" },
         { "Secondary Archetype", "SecondaryArchetype" },
         { "Class", "Class" },
+        { "Ideal Node", "IdealNode" },
+        { "RP Priority", "RpPriority" },
     };
 
     public HomePageView()
@@ -36,20 +37,39 @@ public partial class HomePageView : UserControl
     private async void StartGuildSheetSearchAsync(object sender, RoutedEventArgs args)
     {
         HomePageViewModel viewModel = (HomePageViewModel)this.DataContext!;
-        KeyValuePair<List<string>, List<GuildMemberModel>>? sheetData = await GuildSpreadsheet.GetSheetData(
+        viewModel.IsSearchWarningMessageVisible = false;
+        string memberName = !string.IsNullOrWhiteSpace(MemberNameTextBox.Text) ? MemberNameTextBox.Text.Trim() : string.Empty;
+
+        LOGGER.Info(
+            $"\nSearching for Members With" +
+            $"\nName: {(!string.IsNullOrWhiteSpace(memberName) ? $"\"{memberName}\"" : "All")}" +
+            $"\nBranch: {(viewModel.BranchSelectedList.Count > 0 ? string.Join(", ", viewModel.BranchSelectedList) : "All")}" +
+            $"\nAccess Level: {(viewModel.AccessLevelSelectedList.Count > 0 ? string.Join(", ", viewModel.AccessLevelSelectedList) : "All")}" +
+            $"\nRace: {(viewModel.RaceSelectedList.Count > 0 ? string.Join(", ", viewModel.RaceSelectedList) : "All")}" + 
+            $"\nTimezone: {(viewModel.TimezoneSelectedList.Count > 0 ? string.Join(", ", viewModel.TimezoneSelectedList) : "All")}" + 
+            $"\nArtisan: {(viewModel.ArtisanSelectedList.Count > 0 ? string.Join(", ", viewModel.ArtisanSelectedList) : "All")}" + 
+            $"\nArchetype: {(viewModel.ArchetypeSelectedList.Count > 0 ? string.Join(", ", viewModel.ArchetypeSelectedList) : "All")}" + 
+            $"\nIdeal Node: {(viewModel.IdealNodeSelectedList.Count > 0 ? string.Join(", ", viewModel.IdealNodeSelectedList) : "All")}" + 
+            $"\nRole Play Priority: {(viewModel.RolePlayPrioritySelectedList.Count > 0 ? string.Join(", ", viewModel.RolePlayPrioritySelectedList) : "All")}"
+        );
+        
+        IEnumerable<GuildMemberModel>? sheetData = await GuildSpreadsheet.GetSheetData(
             viewModel.BranchSelectedList, 
             viewModel.RaceSelectedList, 
             viewModel.TimezoneSelectedList, 
             viewModel.RolePlayPrioritySelectedList, 
             viewModel.ArtisanSelectedList,
             viewModel.ArchetypeSelectedList,
-            !string.IsNullOrWhiteSpace(MemberNameTextBox.Text) ? MemberNameTextBox.Text.Trim() : string.Empty
+            viewModel.AccessLevelSelectedList.Count == 1 ? viewModel.AccessLevelSelectedList[0] : null,
+            viewModel.IdealNodeSelectedList,
+            memberName
         );
 
-        if (sheetData is null || sheetData.Value.Value.Count == 0)
+        if (sheetData is null || !sheetData.Any())
         {
-            LOGGER.Debug("Spreadsheet Search Returned no Data");
-            // TODO - Add some visual when no data is returned
+            viewModel.IsDataGridVisible = false;
+            viewModel.IsSearchWarningMessageVisible = true;
+            LOGGER.Info("Search Returned no Data");
             return;
         }
 
@@ -57,7 +77,7 @@ public partial class HomePageView : UserControl
 
         // Clear the existing queried member list and populate it with new data
         HomePageViewModel.QueriedMemberList.Clear();
-        HomePageViewModel.QueriedMemberList.AddRange(sheetData.Value.Value);
+        HomePageViewModel.QueriedMemberList.AddRange(sheetData);
 
         // Clear and prepare the DataGrid columns
         dataGrid.Columns.Clear();
@@ -71,7 +91,7 @@ public partial class HomePageView : UserControl
         });
 
         // Add the relevant columns dynamically
-        foreach (string header in sheetData.Value.Key.Skip(1))
+        foreach (string header in GuildSpreadsheet.HEADERS.Skip(1))
         {
             if (columnMappings.TryGetValue(header, out string? propertyName))
             {
@@ -115,6 +135,12 @@ public partial class HomePageView : UserControl
                 break;
             case "RacePopup":
                 viewModel!.IsRaceListOpen = false;
+                break;
+            case "IdealNodePopup":
+                viewModel!.IsIdealNodeListOpen = false;
+                break;
+            case "AccessLevelPopup":
+                viewModel!.IsAccessLevelListOpen = false;
                 break;
         };
     }

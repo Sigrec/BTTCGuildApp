@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:i="https://github.com/projektanker/icons.avalonia"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="680"
+        MinWidth="960"
+        MinHeight="680"
         x:Class="BTTCGuildApp.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/BTTC.ico"
@@ -43,7 +45,7 @@
 					i:Attached.Icon="fa-solid fa-bars"
                     Width="32"
                     Height="32"
-                    Margin="9 11 0 7"
+                    Margin="9 15 0 7"
 					FontSize="20"
 					Foreground="rgba(219, 183, 77, 1)"
 					Background="rgba(45, 45, 45, 1)"
@@ -78,6 +80,8 @@
 									FontSize="20"/>
                                 <TextBlock 
 									Text="{Binding Label}"
+									FontWeight="SemiBold"
+									VerticalAlignment="Center"
 									Grid.Row="0"
 									Grid.Column="2"/>
                             </Grid>

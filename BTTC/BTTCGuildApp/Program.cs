@@ -19,6 +19,7 @@ namespace BTTCGuildApp
         {
             IconProvider.Current
                 .Register<FontAwesomeIconProvider>();
+                
 
             return AppBuilder.Configure<App>()
                 .UsePlatformDetect()
